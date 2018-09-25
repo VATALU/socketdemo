@@ -9,22 +9,7 @@ import java.net.Socket;
 import java.util.Optional;
 
 public class TCPServer {
-    public static void main(String[] args) {
-        TCPServer tcpServer = new TCPServer();
-        Optional<Socket> opSocket = tcpServer.open(8080);
-        if (opSocket.isPresent()) {
-            while (true) {
-                Socket socket = opSocket.get();
-                String message = tcpServer.receive(socket);
-                if (message != null) {
-                    System.out.println(message);
-                    tcpServer.send(socket,message.toUpperCase()+"\n");
-                }
-            }
-        }
-    }
-
-    public void close(Socket socket) {
+    public static void close(Socket socket) {
         try {
             socket.close();
         } catch (IOException e) {
@@ -32,9 +17,8 @@ public class TCPServer {
         }
     }
 
-    public Optional<Socket> open(int port) {
+    public static Optional<Socket> open(ServerSocket serverSocket) {
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
             return Optional.of(serverSocket.accept());
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,7 +26,7 @@ public class TCPServer {
         return Optional.empty();
     }
 
-    public void send(Socket socket, String sentence) {
+    public static void send(Socket socket, String sentence) {
         try {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             out.writeBytes(sentence);
@@ -53,7 +37,7 @@ public class TCPServer {
 
     }
 
-    public String receive(Socket socket) {
+    public static String receive(Socket socket) {
         BufferedReader in = null;
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

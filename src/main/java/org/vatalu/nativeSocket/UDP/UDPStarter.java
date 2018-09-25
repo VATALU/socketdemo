@@ -38,11 +38,19 @@ public class UDPStarter {
             while (true) {
                 DatagramPacket datagramPacket = udpServer.receive(socket);
                 String message = new String(datagramPacket.getData());
-                InetAddress IPAddress = datagramPacket.getAddress();
-                int port2 = datagramPacket.getPort();
-                System.out.println("[UDP server "+port+"] receive"+ message);
-                String capitalizedSentence = message.toUpperCase() + "\n";
-                udpServer.send(capitalizedSentence, socket, IPAddress, port2);
+                if(message.contains("username:")&&message.contains("password")){
+                    InetAddress IPAddress = datagramPacket.getAddress();
+                    int port2 = datagramPacket.getPort();
+                    System.out.println("[UDP server "+port+"] receive:"+ message);
+                    String capitalizedSentence = "login success\n";
+                    udpServer.send(capitalizedSentence, socket, IPAddress, port2);
+                } else {
+                    InetAddress IPAddress = datagramPacket.getAddress();
+                    int port2 = datagramPacket.getPort();
+                    System.out.println("[UDP server "+port+"] receive:"+ message);
+                    String capitalizedSentence = "login failure";
+                    udpServer.send(capitalizedSentence, socket, IPAddress, port2);
+                }
             }
         });
     }
@@ -55,11 +63,16 @@ public class UDPStarter {
             Scanner scanner = new Scanner(System.in);
             while (scanner.hasNext()) {
                 String message = scanner.nextLine();
+                if("disconnect".equals(message)) {
+                    socket.close();
+                    System.out.println("disconnect");
+                    return;
+                }
                 try {
                     InetAddress IPAddress = InetAddress.getByName("localhost");
                     udpClient.send(message, socket, IPAddress, 9876);
                     String sentence = udpClient.receive(socket);
-                    System.out.println("[UDP client] receive "+sentence);
+                    System.out.println("[UDP client] receive: "+sentence);
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }

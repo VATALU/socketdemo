@@ -38,4 +38,8 @@ class UDPServer {
         }
         return datagramPacket;
     }
+
+    public void close(DatagramSocket socket) {
+        socket.close();
+    }
 }
